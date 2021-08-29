@@ -1,5 +1,5 @@
 # sip-projekt
-Pobierz sobie [Typora](https://typora.io/#windows), tam będzie mógł otworzyć `sprawko.md`.
+Pobierz sobie [Typora](https://typora.io/#windows), tam będziesz mógł otworzyć `sprawko.md`.
 
 A żeby zrobić z pliku `.md` plik `.pdf` to wystarczy pobrać wtyczkę do Visual Studio Code. Ale to ja to zrobię ez.
 
