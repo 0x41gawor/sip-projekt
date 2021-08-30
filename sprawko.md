@@ -1,6 +1,6 @@
 # Statyczna konfiguracja sieci
 
-//TODO miejsce na obrazek topologia-adresacja
+![](img/topologia-adresacja.png)
 
 ## Sprawdzenie adresów mac switch'ów
 
