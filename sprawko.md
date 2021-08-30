@@ -1,21 +1,21 @@
 # Projekt SIP
 
-Spis treści
+Spis treści:
 
 - [1 Statyczna konfiguracja sieci](#1-statyczna-konfiguracja-sieci)
-  - 1.1 Sprawdzenie adresów mac switch'ów
-  - 1.2 Wyłączenie auto-konfiguracji IPv6 na hostach
-  - 1.3 Konfiguracja domeny A
-  - 1.4 Konfiguracja domeny B
-  - 1.5 Konfiguracja domeny C
-  - 1.6 Konfiguracja najkrótszej ścieżki
-  - 1.7 Konfiguracja najdłuższej ścieżki
-- [2 Dynamiczna konfiguracja sieci](2-dynamiczna-konfiguracja-sieci)
-  - 2.1 Wyłączenie auto-konfiguracji na IPv6 na hostach
-  - 2.2 Wygenerowanie adresów interfejsów
-  - 2.3 Rozgłoszenie wiadomości RA
-  - 2.4 Konfiguracja OSPFv3 na routerach
-  - 2.5 Zmiana konfiguracji sieci
+  - [1.1 Sprawdzenie adresów mac switch'ów](#11-sprawdzenie-adresów-mac-switchów)
+  - [1.2 Wyłączenie auto-konfiguracji IPv6 na hostach](#12-wyłączenie-auto-konfiguracji-ipv6-na-hostach)
+  - [1.3 Konfiguracja domeny A](#13-konfiguracja-domeny-a)
+  - [1.4 Konfiguracja domeny B](#14-konfiguracja-domeny-b)
+  - [1.5 Konfiguracja domeny C](#15-konfiguracja-domeny-c)
+  - [1.6 Konfiguracja najkrótszej ścieżki](#16-konfiguracja-najkrótszej-ścieżki)
+  - [1.7 Konfiguracja najdłuższej ścieżki](#17-konfiguracja-najdłuższej-ścieżki)
+- [2 Dynamiczna konfiguracja sieci](#2-dynamiczna-konfiguracja-sieci)
+  - [2.1 Wyłączenie auto-konfiguracji na IPv6 na hostach](#21-wyłączenie-auto-konfiguracji-ipv6-na-hostach)
+  - [2.2 Wygenerowanie adresów interfejsów](#22-wygenerowanie-adresów-interfejsów)
+  - [2.3 Rozgłoszenie wiadomości RA](#23-rozgłoszenie-wiadomości-ra)
+  - [2.4 Konfiguracja OSPFv3 na routerach](#24-konfiguracja-ospfv3-na-routerach)
+  - [2.5 Zmiana konfiguracji sieci](#25-zmiana-konfiguracji-sieci)
 
 # 1 Statyczna konfiguracja sieci
 
