@@ -1,8 +1,27 @@
-# Statyczna konfiguracja sieci
+# Projekt SIP
+
+Spis treści
+
+- [1 Statyczna konfiguracja sieci](#1-statyczna-konfiguracja-sieci)
+  - 1.1 Sprawdzenie adresów mac switch'ów
+  - 1.2 Wyłączenie auto-konfiguracji IPv6 na hostach
+  - 1.3 Konfiguracja domeny A
+  - 1.4 Konfiguracja domeny B
+  - 1.5 Konfiguracja domeny C
+  - 1.6 Konfiguracja najkrótszej ścieżki
+  - 1.7 Konfiguracja najdłuższej ścieżki
+- [2 Dynamiczna konfiguracja sieci](2-dynamiczna-konfiguracja-sieci)
+  - 2.1 Wyłączenie auto-konfiguracji na IPv6 na hostach
+  - 2.2 Wygenerowanie adresów interfejsów
+  - 2.3 Rozgłoszenie wiadomości RA
+  - 2.4 Konfiguracja OSPFv3 na routerach
+  - 2.5 Zmiana konfiguracji sieci
+
+# 1 Statyczna konfiguracja sieci
 
 ![](img/topologia-adresacja.png)
 
-## Sprawdzenie adresów mac switch'ów
+## 1.1 Sprawdzenie adresów mac switch'ów
 
 ### EthernetSwitch-1
 
@@ -22,7 +41,7 @@ Ethernet0  0c:4f:a4:64:23:02  1
 Ethernet1  0c:4f:a4:be:16:00  1
 ```
 
-## Wyłączenie auto konfiguracji IPv6 na hostach
+## 1.2 Wyłączenie auto-konfiguracji IPv6 na hostach
 
 Komenda wpisana w obu hostach:
 
@@ -30,7 +49,7 @@ Komenda wpisana w obu hostach:
 sudo sysctl -w net.ipv6.conf.all.forwarding=0
 ```
 
-## Konfiguracja domeny A
+## 1.3 Konfiguracja domeny A
 
 ### Router-A
 
@@ -46,11 +65,11 @@ gns3@box:~$ sudo ip -6 addr add 2001:db8:a::2/64 dev eth0
 gns3@box:~$ sudo ip -6 route add default via 2001:db8:a::1
 ```
 
-### Rezultat - komunikacja między Host-1 a Router-A
+### 1.3R Rezultat - komunikacja między Host-1 a Router-A
 
 ![](img/1.png)
 
-## Konfiguracja domeny B
+## 1.4 Konfiguracja domeny B
 
 ### Router-B
 
@@ -66,11 +85,11 @@ gns3@box:~$ sudo ip -6 addr add 2001:db8:b::2/64 dev eth0
 gns3@box:~$ sudo ip -6 route add default via 2001:db8:b::1
 ```
 
-### Rezultat - komunikacja między Host-1 a Router-A
+### 1.4R Rezultat - komunikacja między Host-1 a Router-A
 
 ![](img/2.png)
 
-## Konfiguracja domeny C
+## 1.5 Konfiguracja domeny C
 
 ### Adresy
 
@@ -132,23 +151,23 @@ vyos@vyos# set interfaces ethernet eth1 address 2001:db8:c:7::1/64
 vyos@vyos# commit
 ```
 
-### Konfiguracja najkrótszej ścieżki
+## 1.6 Konfiguracja najkrótszej ścieżki
 
-#### Router-A
+### Router-A
 
 ```sh
 vyos@vyos# set protocols static route6 2001:db8:b::/64 next-hop 2001:db8:c:1::2
 vyos@vyos# commit
 ```
 
-#### Router-B
+### Router-B
 
 ```sh
 vyos@vyos# set protocols static route6 2001:db8:a::/64 next-hop 2001:db8:c:3::1
 vyos@vyos# commit
 ```
 
-#### Router-C
+### Router-C
 
 ```sh
 vyos@vyos# set protocols static route6 2001:db8:a::/64 next-hop 2001:db8:c:1::1
@@ -156,7 +175,7 @@ vyos@vyos# set protocols static route6 2001:db8:b::/64 next-hop 2001:db8:c:2::2
 vyos@vyos# commit
 ```
 
-#### Router-D
+### Router-D
 
 ```sh
 vyos@vyos# set protocols static route6 2001:db8:a::/64 next-hop 2001:db8:c:2::1
@@ -164,27 +183,27 @@ vyos@vyos# set protocols static route6 2001:db8:b::/64 next-hop 2001:db8:c:3::2
 vyos@vyos# commit
 ```
 
-#### Rezultaty
+### 1.6R Rezultaty
 
-##### Tablice routingu
+#### 1.6R.1 Tablice routingu
 
-###### Router-A
+##### Router-A
 
 ![](img/3.png)
 
-###### Router-B
+##### Router-B
 
 ![](img/4.png)
 
-###### Router-C
+##### Router-C
 
 ![](img/5.png)
 
-###### Router-D
+##### Router-D
 
 ![](img/6.png)
 
-##### Komunikacja między Hostami
+#### 1.6R.2 Komunikacja między Hostami
 
 ###### Host-1 --> Host-2
 
@@ -194,25 +213,25 @@ vyos@vyos# commit
 
 ![](img/8.png)
 
-### Konfiguracja najdłuższej ścieżki
+## 1.7 Konfiguracja najdłuższej ścieżki
 
-#### Usunięcie poprzedniej ścieżki
+### 1.7.1 Usunięcie poprzedniej ścieżki
 
-##### Router-A
+#### Router-A
 
 ```sh
 vyos@vyos# delete protocols static route6 2001:db8:b::/64
 vyos@vyos# commit
 ```
 
-##### Router-B
+#### Router-B
 
 ```sh
 vyos@vyos# delete protocols static route6 2001:db8:a::/64
 vyos@vyos# commit
 ```
 
-##### Router-C
+#### Router-C
 
 Usunęliśmy tylko ruch w stronę domeny A, ponieważ ruch w stronę domeny B, będzie taki sam dla obu ścieżek.
 
@@ -221,7 +240,7 @@ vyos@vyos# delete protocols static route6 2001:db8:a::/64
 vyos@vyos# commit
 ```
 
-##### Router-D
+#### Router-D
 
 Usunęliśmy tylko ruch w stronę domeny B, ponieważ ruch w stronę domeny A, będzie taki sam dla obu ścieżek.
 
@@ -229,6 +248,8 @@ Usunęliśmy tylko ruch w stronę domeny B, ponieważ ruch w stronę domeny A, b
 vyos@vyos# delete protocols static route6 2001:db8:b::/64
 vyos@vyos# commit
 ```
+
+### 1.7.2 Konfiguracja najdłuższej ścieżki
 
 #### Router-A
 
@@ -276,9 +297,9 @@ vyos@vyos# set protocols static route6 2001:db8:b::/64 next-hop 2001:db8:c:7::2
 vyos@vyos# commit
 ```
 
-#### Rezultaty
+#### 1.7R Rezultaty
 
-##### Tablice routingu
+##### 1.7R.1 Tablice routingu
 
 ###### Router-A
 
@@ -304,7 +325,7 @@ vyos@vyos# commit
 
 ![](img/14.png)
 
-##### Komunikacja między Hostami
+##### 1.7R.2 Komunikacja między Hostami
 
 ###### Host-1 --> Host-2
 
@@ -314,9 +335,9 @@ vyos@vyos# commit
 
 ![](img/16.png)
 
-# Dynamiczna konfiguracja sieci
+# 2 Dynamiczna konfiguracja sieci
 
-## Wyłączenie auto konfiguracji IPv6 na hostach
+## 2.1 Wyłączenie auto-konfiguracji IPv6 na hostach
 
 Komenda wpisana w obu hostach:
 
@@ -324,7 +345,7 @@ Komenda wpisana w obu hostach:
 sudo sysctl -w net.ipv6.conf.all.forwarding=0
 ```
 
-## Wygenerowanie adresów interfejsów 
+## 2.2 Wygenerowanie adresów interfejsów 
 
 //TODO opisać EUI64 i SLAAC
 
@@ -382,9 +403,9 @@ vyos@vyos# set interfaces ethernet eth1 ipv6 address eui64 2001:db8:c:7::/64
 vyos@vyos# commit
 ```
 
-### Rezultaty
+### 2.2R Rezultaty
 
-#### Globalne adresy IPv6
+#### 2.2R.1 Globalne adresy IPv6
 
 ##### Router-A
 
@@ -422,7 +443,7 @@ vyos@vyos# commit
 
 ![](img/22.png)
 
-## Rozgłoszenie wiadomości RA
+## 2.3 Rozgłoszenie wiadomości RA
 
 ### Router-A
 
@@ -446,9 +467,9 @@ vyos@vyos# set interfaces ethernet eth0 ipv6 router-advert prefix 2001:db8:b::/6
 vyos@vyos# commit
 ```
 
-### Rezultaty
+### 2.3R Rezultaty
 
-#### Wygenerowanie globalnych adresów IPv6 hostów
+#### 2.3R.1 Wygenerowanie globalnych adresów IPv6 hostów
 
 ##### Host-1: `gns3@bpx:~$ ip -6 addr show dev eth0`
 
@@ -458,7 +479,7 @@ vyos@vyos# commit
 
 ![](img/25.png)
 
-#### Możliwość zpingowania z hosta interfejsów routerów w ich domenie
+#### 2.3R.2 Możliwość zpingowania z hosta interfejsów routerów w ich domenie
 
 ##### Host-1
 
@@ -468,9 +489,9 @@ vyos@vyos# commit
 
 ![](img/26.png)
 
-## Konfiguracja OSPFv3 na routerach
+## 2.4 Konfiguracja OSPFv3 na routerach
 
-### Wyłączenie przekazywania IPv6 
+### 2.4.1 Wyłączenie przekazywania IPv6 
 
 Na wszelki wypadek na każdym routerze wykonujemy komendę:
 
@@ -480,7 +501,7 @@ vyos@vyos# delete system ipv6 disable-forwarding
 
 Lecz okazało nie być to konieczne, ponieważ na każdym routerze dostaliśmy komunikat `Nothing to delete (the specified node does not exist)`.
 
-### Nadanie router-id routerom OSPFv3
+### 2.4.2 Nadanie router-id routerom OSPFv3
 
 Użyjemy do tego adresów loopback, które zdefiniujemy według schematu `Router-A ==> 1.1.1.1`, `Router-B ==> 2.2.2.2` itd.
 
@@ -531,7 +552,7 @@ vyos@vyos# set protocols ospfv3 parameters router-id 6.6.6.6
 vyos@vyos# commit
 ```
 
-### Dodanie wszystkich interfejsów do `Area 0`
+### 2.4.3 Dodanie wszystkich interfejsów do `Area 0`
 
 #### Router-A
 
@@ -585,7 +606,7 @@ vyos@vyos# set protocols ospfv3 area 0.0.0.0 interface eth1
 vyos@vyos# commit
 ```
 
-### Ustalenie prefiksów rozgłaszanych podsieci IPv6
+### 2.4.4 Ustalenie prefiksów rozgłaszanych podsieci IPv6
 
 #### Router-A
 
@@ -639,7 +660,7 @@ vyos@vyos# set protocols ospfv3 area 0.0.0.0 range 2001:db8:c:7::/64
 vyos@vyos# commit
 ```
 
-### Rozgłoszenie prefiksów
+### 2.4.5 Rozgłoszenie prefiksów
 
 Na każdym routerze używamy komendy:
 
@@ -648,9 +669,9 @@ vyos@vyos# set protocols ospfv3 redistribute connected
 vyos@vyos# commit
 ```
 
-### Rezultaty
+### 2.4R Rezultaty
 
-#### Komunikacja między hostami
+#### 2.4R.1 Komunikacja między hostami
 
 ##### Host-1 --> Host-2
 
@@ -672,7 +693,7 @@ Na hostach nie ma polecenie `traceroute6` dla IPv6, dlatego użyjemy go z router
 
 //TODO wypisać jak przebiega ścieżka Znaczy no wiadomo jak xd
 
-### Zmiana konfiguracji sieci
+## 2.5 Zmiana konfiguracji sieci
 
 Zmienimy ścieżkę między hostami z `A-C-D-B` na `A-E-C-D-B`
 
@@ -692,15 +713,15 @@ Router-C: vyos@vyos# commit
 
 Wystarczy wartość `3` ponieważ domyślnie łącza mają ustawione metryki równe `1`. Co do wartości `2` nie możemy być pewni, ponieważ wtedy powstał by nam remis: 2 łącza z metrykami `1` lub jedno łącze z metryką `2`.
 
-#### Rezultaty
+### 2.5R Rezultaty
 
-##### Nowa ścieżka zaobserwowana `traceroute`'em
+#### 2.5R.1 Nowa ścieżka zaobserwowana `traceroute`'em
 
-###### Router-A --> Host-2
+##### Router-A --> Host-2
 
 ![](img/31.png)
 
-###### Router-B --> Host-1
+##### Router-B --> Host-1
 
 ![](img/32.png)
 
