@@ -288,4 +288,53 @@ Z racji, że skasowaliśmy poprzednią konfigurację, to musimy jeszcze raz wył
 
 Tym razem zamiast manualnie przypisać wymyślone przez nas adresy interfejsom routerów, korzystamy z algorytmu eui64. 
 
-Ustawiamy adres jako połączenie adresu podsieci, do której należy interfejs i tego co zwróci eui64.
+Generujemy routerom adresy.
+
+```sh
+vyos@vyos# set interfaces ethernet eth2 ipv6 address eui64 2001:db8:b::/64
+vyos@vyos# set interfaces ethernet eth0 ipv6 address eui64 2001:db8:c:3::/64
+vyos@vyos# set interfaces ethernet eth1 ipv6 address eui64 2001:db8:c:7::/64
+```
+
+**Rezultatem** są adresy IPv6 interfejsów routerów.
+
+#### 3 Rozgłoszenie wiadomości RA
+
+Skoro routery mają już adresy, to teraz rozgłaszamy je wiadomościami RA i hosty również otrzymują adresy. SLAAC zadziałał.
+
+```sh
+vyos@vyos# set interfaces ethernet eth0 ipv6 router-advert send-advert true
+vyos@vyos# set interfaces ethernet eth0 ipv6 router-advert min-interval 8
+vyos@vyos# set interfaces ethernet eth0 ipv6 router-advert max-interval 12
+vyos@vyos# set interfaces ethernet eth0 ipv6 router-advert prefix 2001:db8:a::/64
+```
+
+Ten krok wykonujemy tylko na routerach domen A i B, bo tylko one "gadają" z hostami.
+
+**Rezultatem** są adresy IPv6 hostów.
+
+#### 4 Konfiguracja OSPFv3
+
+Musimy nadać każdemu routerowi router-id. W tym celu najpierw definiujemy adresy loopback dla każdego routera, a następnie takie same wartości przypisujemy jako `router-id` w ospf. Dlaczego? Taka konwencja.
+
+```sh
+vyos@vyos# set interfaces loopback lo address 3.3.3.3/32
+vyos@vyos# set protocols ospfv3 parameters router-id 3.3.3.3
+```
+
+OSPF wymaga istnienia tzw. backbone area. Dodajemy więc wszystkie routery do tego obszaru OSPF.
+
+```sh
+vyos@vyos# set protocols ospfv3 area 0.0.0.0 interface eth0
+vyos@vyos# set protocols ospfv3 area 0.0.0.0 interface eth1
+vyos@vyos# set protocols ospfv3 area 0.0.0.0 interface eth2
+vyos@vyos# commit
+```
+
+Następnie uruchamiamy rozgłaszanie wiadomości LSA? przez OSPF
+
+```sh
+vyos@vyos# set protocols ospfv3 redistribute connected
+```
+
+**Rezultatem ** jest komunikacja między hostami.
