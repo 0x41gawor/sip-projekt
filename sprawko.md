@@ -93,7 +93,11 @@ gns3@box:~$ sudo ip -6 route add default via 2001:db8:b::1
 
 ### Adresy
 
-//TODO dopisać komentarz o zmienionej masce z /48 na /64
+//DONE
+
+Domenie C został przydzielony adres podsieci o masce `/48`. My musimy tę podsieć podzielić na kolejne, ponieważ potrzebujemy podsieci dla każdego z 7 łączy. Dlatego też zwiększamy maskę do `/64`, a każdemu łączu dajemy podsieć o adresie `2001:0DB8:000C:000<x>:0000:0000:0000:0000` (stosując skrócony zapis: `2001:db8:c:<x>::/64`). Gdzie `x` to numer łącza.
+
+Następnie numerujemy łącza i nadajemy im adresy podsieci, a potem przypisujemy adresy interfejsom należącym to tych podsieci jako kolejne identyfikatory w podsieciach "łączowych".
 
 #### Router-A
 
@@ -747,5 +751,3 @@ B -> D -> C -> E -> A -> h1
 Ta zmiana następuje po ustawieniu kosztu OSPF równego 3 na interfejsie eth0 routera C
 
 Ścieżki te różnią się od tych poprzednich tym, że nie korzystają bezpośrednio z łącza RA-RC, tylko je omijają za pośrednictwem routera E
-
-//TODO dodać rozdziały do tego wszystkiego!!!

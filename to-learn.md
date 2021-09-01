@@ -189,7 +189,56 @@ https://www.howtogeek.com/228286/how-is-the-uniqueness-of-mac-addresses-enforced
 
 ### 1 Konfiguracja statyczna
 
-//TODO
+Konfiguracja statyczna polega na:
+
+- [ ] manualnym przypisaniu adresu IPv6 do hosta (do odpowiedniego interfejsu, z podanej puli adresowej)
+- [ ] ustawieniu routingu w hoście na odpowiednią bramę domyślną
+- [ ] mnaualnym przypisaniu adresów IPv6 do interfejsów routerów
+- [ ] konfiguracji routingu statycznego między routerami (za pomocą next-hop)
+
+
+
+### 1 Sprawdzenie adresów mac switchów
+
+Sprawdzenie czy porty switchów mają ustawiony VLAN 1, jeśli tak, nie musimy nic tam konfigurować.
+
+Adres `mac` switch sprawdza się za pomocą komendy `mac`.
+
+Wyszło nam, że wszystko jest ustawione git.
+
+### 2 Wyłączenie autokonfiguracji IPv6 na hostach
+
+autokonfiguracja IPv6 w hoście jest nieaktywna, jeżeli pełni on funkcję rutera, dlatego przed realizacją projektu musimy ją manualnie wyłączyć (bo domyślnie jest włączona ta funkcja)
+
+`sudo sysctl -w net.ipv6.conf.all.forwarding=0`
+
+### 3 Konfigruacja domeny A
+
+W tym kroku najpierw do urządzeń domeny A przypisujemy manualnie adresy IPv6.
+
+- Najpierw do interfejsu router'a połączonego z hostem:
+  - `set interfaces ethernet eth0 address 2001:db8:a::1/64`
+
+- Potem do interfejsu hosta połączonego z routerem
+  - `sudo ip -6 addr add 2001:db8:a::2/64 dev eth0`
+
+Następnie ustawiamy router A jako brama domyślna hosta-1
+
+`sudo ip -6 route add default via 2001:db8:a::1`
+
+**Rezultatem** tego kroku jest komunikachja pomiędzy routerem A a hostem-1.
+
+### 4 Konfiguracja domeny B
+
+Analogicznie jak w pkt.3
+
+### 5 Konfiguracja domeny C
+
+
+
+
+
+
 
 ### 2 Konfiguracja dynamiczna
 
