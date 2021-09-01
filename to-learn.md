@@ -322,6 +322,8 @@ vyos@vyos# set protocols ospfv3 parameters router-id 3.3.3.3
 
 OSPF wymaga istnienia tzw. backbone area. Dodajemy więc wszystkie routery do tego obszaru OSPF.
 
+Obszar 0 w OSPF, to tzw **backbone area**. Jest to obszar, do którego podłączone są wszystkie inne, służy do tranzytu ruchu między nimi.
+
 ```sh
 vyos@vyos# set protocols ospfv3 area 0.0.0.0 interface eth0
 vyos@vyos# set protocols ospfv3 area 0.0.0.0 interface eth1
@@ -329,7 +331,7 @@ vyos@vyos# set protocols ospfv3 area 0.0.0.0 interface eth2
 vyos@vyos# commit
 ```
 
-Następnie uruchamiamy rozgłaszanie wiadomości LSA? przez OSPF
+Następnie uruchamiamy rozgłaszanie **wiadomości LSA** przez OSPF
 
 ```sh
 vyos@vyos# set protocols ospfv3 redistribute connected
