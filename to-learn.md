@@ -191,14 +191,12 @@ https://www.howtogeek.com/228286/how-is-the-uniqueness-of-mac-addresses-enforced
 
 Konfiguracja statyczna polega na:
 
-- [ ] manualnym przypisaniu adresu IPv6 do hosta (do odpowiedniego interfejsu, z podanej puli adresowej)
-- [ ] ustawieniu routingu w hoście na odpowiednią bramę domyślną
-- [ ] mnaualnym przypisaniu adresów IPv6 do interfejsów routerów
-- [ ] konfiguracji routingu statycznego między routerami (za pomocą next-hop)
+- [x] manualnym przypisaniu adresu IPv6 do hosta (do odpowiedniego interfejsu, z podanej puli adresowej)
+- [x] ustawieniu routingu w hoście na odpowiednią bramę domyślną
+- [x] mnaualnym przypisaniu adresów IPv6 do interfejsów routerów
+- [x] konfiguracji routingu statycznego między routerami (za pomocą next-hop)
 
-
-
-### 1 Sprawdzenie adresów mac switchów
+#### 1 Sprawdzenie adresów mac switchów
 
 Sprawdzenie czy porty switchów mają ustawiony VLAN 1, jeśli tak, nie musimy nic tam konfigurować.
 
@@ -206,13 +204,13 @@ Adres `mac` switch sprawdza się za pomocą komendy `mac`.
 
 Wyszło nam, że wszystko jest ustawione git.
 
-### 2 Wyłączenie autokonfiguracji IPv6 na hostach
+#### 2 Wyłączenie autokonfiguracji IPv6 na hostach
 
 autokonfiguracja IPv6 w hoście jest nieaktywna, jeżeli pełni on funkcję rutera, dlatego przed realizacją projektu musimy ją manualnie wyłączyć (bo domyślnie jest włączona ta funkcja)
 
 `sudo sysctl -w net.ipv6.conf.all.forwarding=0`
 
-### 3 Konfigruacja domeny A
+#### 3 Konfigruacja domeny A
 
 W tym kroku najpierw do urządzeń domeny A przypisujemy manualnie adresy IPv6.
 
@@ -228,18 +226,66 @@ Następnie ustawiamy router A jako brama domyślna hosta-1
 
 **Rezultatem** tego kroku jest komunikachja pomiędzy routerem A a hostem-1.
 
-### 4 Konfiguracja domeny B
+#### 4 Konfiguracja domeny B
 
 Analogicznie jak w pkt.3
 
-### 5 Konfiguracja domeny C
+#### 5 Konfiguracja domeny C
 
+Tutaj mamy do czynienia z domeną tranzytową (brak hostów).
 
+Domenie C został przydzielony adres podsieci o masce `/48`. My musimy tę podsieć podzielić na kolejne, ponieważ potrzebujemy podsieci dla każdego z 7 łączy. Dlatego też zwiększamy maskę do `/64`, a każdemu łączu dajemy podsieć o adresie `2001:0DB8:000C:000<x>:0000:0000:0000:0000` (stosując skrócony zapis: `2001:db8:c:<x>::/64`). Gdzie `x` to numer łącza.
 
+Następnie numerujemy łącza i nadajemy im adresy podsieci, a potem przypisujemy adresy interfejsom należącym to tych podsieci jako kolejne identyfikatory w podsieciach "łączowych".
 
+np. dla routera C
 
+```sh
+vyos@vyos# set interfaces ethernet eth0 address 2001:db8:c:1::2/64
+vyos@vyos# set interfaces ethernet eth1 address 2001:db8:c:5::2/64
+vyos@vyos# set interfaces ethernet eth2 address 2001:db8:c:2::1/64
+```
 
+**Rezultatem**  jest to, że  każdy interfejs należący do domeny C ma manualnie przypisany adres IPv6.
+
+Następnie za pomocą `next-hop` robimy routingu statyczny
+
+#### 6 Konfiguracja najkrótszej ścieżki
+
+W najkrótszej ścieżce routery E i F nie biorą udziału. Pozostałym routerom za pomocą `next-hop` robimy routing statyczny.
+
+```sh
+Router C: vyos@vyos# set protocols static route6 2001:db8:a::/64 next-hop 2001:db8:c:1::1
+Router C: vyos@vyos# set protocols static route6 2001:db8:b::/64 next-hop 2001:db8:c:2::2
+```
+
+**Rezultatem** są:
+
+- wpisy w tablicy routingu
+- komunikacja między hostami
+
+#### 7 Konfiguracja najdłuższej ścieżki
+
+Najpierw musimy usunąć poprzednią konfugurację:
+
+`vyos@vyos# delete protocols static route6 2001:db8:b::/64`
+
+Następnie wymyślamy najdłuższą ścieżkę i według niej robimy jak w pkt.6
+
+#### Wnioski
+
+Konfiguracja statyczna dla małych sieci jest spoko. Mamy nad wszystkimi totalną kontrolę. Sama konfiguracja jest prosta ideologicznie, łatwa do zrozumienia i prosta do zrobienia. Wprowadzenie zmian np. w routingu byłoby już nieco kłopotliwe. Oraz dla dużych sieci wklepanie konfiguracji zajęło, by dużo czasu. 
 
 ### 2 Konfiguracja dynamiczna
 
-//TODO
+#### 1 Wyłączenie autokonfiguracji IPv6 na hostach
+
+Z racji, że skasowaliśmy poprzednią konfigurację, to musimy jeszcze raz wyłączyć autokonfigurację IPv6 na hostach.
+
+`sudo sysctl -w net.ipv6.conf.all.forwarding=0`
+
+#### 2 Wygenerowanie adresów interfejsów
+
+Tym razem zamiast manualnie przypisać wymyślone przez nas adresy interfejsom routerów, korzystamy z algorytmu eui64. 
+
+Ustawiamy adres jako połączenie adresu podsieci, do której należy interfejs i tego co zwróci eui64.

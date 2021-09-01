@@ -1,4 +1,4 @@
-# Projekt SIP
+# Projekt SIP - "Konfiguracja sieci IPv6"
 
 Spis treści:
 
@@ -351,7 +351,36 @@ sudo sysctl -w net.ipv6.conf.all.forwarding=0
 
 ## 2.2 Wygenerowanie adresów interfejsów 
 
-//TODO opisać EUI64 i SLAAC
+//DONE
+
+Tym razem zamiast manualnie przypisać wymyślone przez nas adresy interfejsom routerów użyjemy techniki wprowadzonej dla IPv6 o nazwie SLAAC (Stateless Address Auto Configuration).
+
+**Jak działa SLAAC?**
+
+Służy on do automatycznej konfiguracji adresów IPv6. Nie wymaga żadnej konfiguracji po stronie hostów, jedyni  minimalna konfiguracja routerów. SLAAC nie wymaga żadnych dodatkowych serwerów. 
+
+Kroki:
+
+- Najpierw na interfejsach routerach uruchamiamy EUI64 (omówione poniżej), co generuje nam 64-bitowy id interfejsu. Łączymy id interfejsu z 64-bitowym prefixem podsieci, co daje w efekcie globalny 128-bitowy adres IPv6.
+- Następnie routery rozgłaszają wiadomości RA (Router Advertisment) informując o prefixach podsieci.
+- Host otrzymuje 64-bitowy prefix podsieci, a następnie używa eui64 do wygenerowania 64-bitowego id interfejsu. Połączenie tych elementów daje w efekcie globalny 128-bitowy adres IPv6.
+
+**Jak działa eui64?**
+
+Odczytuje on adres MAC interfejsu, który tak naprawdę dzieli się na dwie części:
+
+- OUI (Organizationally Unique Identifier)
+- NIC specific (specyficzny dla danej kart sieciowej (Network Interface Card))
+
+Obie te części mają po 24 bity.
+
+eui64 pomiędzy obie te częsci dodaje `0xFFFE` (16 bitów, co łącznie daje 64)
+
+Na koniec odwracamy siódmy bit od lewej.
+
+
+
+Gdy połączymy prefix podsieci oraz eui64 identifier, teoretycznie powstaje nam globalnie unikalny adres IPv6.
 
 ### Router-A
 
@@ -707,9 +736,19 @@ B -> D -> C -> A -> h1
 
 ## 2.5 Zmiana konfiguracji sieci
 
-Zmienimy ścieżkę między hostami z `A-C-D-B` na `A-E-C-D-B`
+> Czy jest możliwa taka konfiguracja protokołu/sieci, żeby używana była ścieżka odmienna od zestawionej za pierwszym razem?
 
-//TODO opisać kilka sposobów na uzyskanie takiego celu
+//DONE
+
+Tak, odmienną ściężkę podczas dynamicznej konfiguracji można uzyskać na kilka sposobów:
+
+- Modyfikacja kosztów łączy (My skorzystamy z tej opcji)
+- Wyłącznie (lub wyłącznie OSPF) jednego z routerów (Nasza topologia nie pozwala nam na skorzystanie z tej opcji)
+- Ustawienie ścieżki statycznej (ponieważ mają one pierwszeństwo nad dynamicznymi)
+
+
+
+Zmienimy ścieżkę między hostami z `A-C-D-B` na `A-E-C-D-B`
 
 W tym celu zmienimy koszty portów na łączu `A-C` na `3` za pomocą komend:
 
