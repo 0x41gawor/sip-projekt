@@ -705,7 +705,7 @@ Zmienimy ścieżkę między hostami z `A-C-D-B` na `A-E-C-D-B`
 
 //TODO opisać kilka sposobów na uzyskanie takiego celu
 
-W tym celu zmienimy koszt łącza `A-C` na `3` za pomocą komend:
+W tym celu zmienimy koszty portów na łączu `A-C` na `3` za pomocą komend:
 
 ```sh
 Router-A: vyos@vyos# set interfaces ethernet eth1 ipv6 ospfv3 cost 3
