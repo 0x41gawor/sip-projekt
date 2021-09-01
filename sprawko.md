@@ -736,13 +736,13 @@ Wystarczy wartość `3` ponieważ domyślnie łącza mają ustawione metryki ró
 Po zmianie kosztów OSPF na portach przy łączu pomiędzy routerami A i C zostaje wybrana nowa ścieżka podczas transmisji danych z hosta pierwszego do drugiego i analogicznie w drugą stronę.<br>
 Nowa ścieżka z routera A do hosta drugiego:<br>
 ```sh
-A -> E -> C -> D -> B -> h2<br>
+A -> E -> C -> D -> B -> h2
 ```
 Ta zmiana następuje po ustawieniu kosztu OSPF równego 3 na interfejsie eth1 routera A<br>
 
 Nowa ścieżka z routera B do hosta pierwszego:<br>
 ```sh
-B -> D -> C -> E -> A -> h1<br>
+B -> D -> C -> E -> A -> h1
 ```
 Ta zmiana następuje po ustawieniu kosztu OSPF równego 3 na interfejsie eth0 routera C
 
