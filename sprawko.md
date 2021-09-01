@@ -93,8 +93,6 @@ gns3@box:~$ sudo ip -6 route add default via 2001:db8:b::1
 
 ### Adresy
 
-//DONE
-
 Domenie C został przydzielony adres podsieci o masce `/48`. My musimy tę podsieć podzielić na kolejne, ponieważ potrzebujemy podsieci dla każdego z 7 łączy. Dlatego też zwiększamy maskę do `/64`, a każdemu łączu dajemy podsieć o adresie `2001:0DB8:000C:000<x>:0000:0000:0000:0000` (stosując skrócony zapis: `2001:db8:c:<x>::/64`). Gdzie `x` to numer łącza.
 
 Następnie numerujemy łącza i nadajemy im adresy podsieci, a potem przypisujemy adresy interfejsom należącym to tych podsieci jako kolejne identyfikatory w podsieciach "łączowych".
@@ -351,8 +349,6 @@ sudo sysctl -w net.ipv6.conf.all.forwarding=0
 
 ## 2.2 Wygenerowanie adresów interfejsów 
 
-//DONE
-
 Tym razem zamiast manualnie przypisać wymyślone przez nas adresy interfejsom routerów użyjemy techniki wprowadzonej dla IPv6 o nazwie SLAAC (Stateless Address Auto Configuration).
 
 **Jak działa SLAAC?**
@@ -438,7 +434,7 @@ vyos@vyos# commit
 
 ### 2.2R Rezultaty
 
-#### 2.2R.1 Globalne adresy IPv6
+#### 2.2R.1 Globalne adresy IPv6 routerów
 
 ##### Router-A
 
@@ -557,7 +553,7 @@ vyos@vyos# commit
 
 ```sh
 vyos@vyos# set interfaces loopback lo address 3.3.3.3/32
-vyos@vyos# set protocols ospfv3 parameters router-id 1.1.1.1
+vyos@vyos# set protocols ospfv3 parameters router-id 3.3.3.3
 vyos@vyos# commit
 ```
 
@@ -737,8 +733,6 @@ B -> D -> C -> A -> h1
 ## 2.5 Zmiana konfiguracji sieci
 
 > Czy jest możliwa taka konfiguracja protokołu/sieci, żeby używana była ścieżka odmienna od zestawionej za pierwszym razem?
-
-//DONE
 
 Tak, odmienną ściężkę podczas dynamicznej konfiguracji można uzyskać na kilka sposobów:
 

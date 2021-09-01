@@ -23,8 +23,6 @@ istnienia centralnego obszaru (tzw. backbone area) oznaczonego identyfikatorem 0
 Ponadto, każdy router OSPF posiada swój 4-bajtowy identyfikator, który również zazwyczaj jest
 zapisywany w notacji IPv4 (np. 192.168.1.1), również w przypadku dedykowanego dla IPv6 OSPFv3.
 
-//TODO poczytaj jutro z wykładu notatki o tym
-
 ## SLAAC
 
 > W tym drugim przypadku wykorzystywane są mechanizmy automatycznej konfiguracji adresów
