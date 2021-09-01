@@ -691,7 +691,13 @@ Na hostach nie ma polecenie `traceroute6` dla IPv6, dlatego użyjemy go z router
 
 ![](img/30.png)
 
-//TODO wypisać jak przebiega ścieżka Znaczy no wiadomo jak xd
+Po rozgłoszeniu przez routery wszystkich połączeń OSPF podczas transmisji danych pomiędzy hostami zostają wybrane następujące ścieżki. 
+Ścieżka z routera A do hosta drugiego:
+A -> C -> D -> B -> h2
+
+Ścieżka z routera B do hosta pierwszego:
+B -> D -> C -> A -> h1
+
 
 ## 2.5 Zmiana konfiguracji sieci
 
@@ -725,6 +731,15 @@ Wystarczy wartość `3` ponieważ domyślnie łącza mają ustawione metryki ró
 
 ![](img/32.png)
 
-//TODO dopisać wnioski, porównać dwie konfiguracje
+Po zmianie kosztów OSPF na portach przy łączu pomiędzy routerami A i C zostaje wybrana nowa ścieżka podczas transmisji danych z hosta pierwszego do drugiego i analogicznie w drugą stronę.
+Nowa ścieżka z routera A do hosta drugiego:
+A -> E -> C -> D -> B -> h2
+Ta zmiana następuje po ustawieniu kosztu OSPF równego 3 na interfejsie eth1 routera A
+
+Nowa ścieżka z routera B do hosta pierwszego:
+B -> D -> C -> E -> A -> h1
+Ta zmiana następuje po ustawieniu kosztu OSPF równego 3 na interfejsie eth0 routera C
+
+Ścieżki te różnią się od tych poprzednich tym, że nie korzystają bezpośrednio z łącza RA-RC, tylko je omijają za pośrednictwem routera E
 
 //TODO dodać rozdziały do tego wszystkiego!!!
